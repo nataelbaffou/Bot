@@ -2,6 +2,10 @@ import fetch from 'node-fetch';
 import getPixels from "get-pixels";
 import WebSocket from 'ws';
 
+const VERSION_NUMBER = 1;
+
+console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
+
 const args = process.argv.slice(2);
 
 if (args.length != 1 && !process.env.ACCESS_TOKEN) {
@@ -109,6 +113,7 @@ function connectSocket() {
         console.log('Connecter au serveur Louis de Funès !')
 
         socket.send(JSON.stringify({ type: 'getmap' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: `nodeheadlessV${VERSION_NUMBER}` }));
     };
 
     socket.onmessage = async function (message) {
