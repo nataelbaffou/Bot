@@ -90,7 +90,7 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     }).showToast();
     accessToken = await getAccessToken();
     Toastify({
-        text: 'Accesstoken opgehaald!',
+        text: 'Jeton d\'accès récupérer !',
         duration: 10000
     }).showToast();
 
