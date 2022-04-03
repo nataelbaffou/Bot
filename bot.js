@@ -2,6 +2,8 @@ import fetch from 'node-fetch';
 import getPixels from "get-pixels";
 import WebSocket from 'ws';
 
+const BASE_URL = "placefrance.noan.dev";
+
 const args = process.argv.slice(2);
 
 if (args.length != 1 && !process.env.ACCESS_TOKEN) {
@@ -13,7 +15,7 @@ let accessTokens = (process.env.ACCESS_TOKEN || args[0]).split(',');
 let defaultAccessToken = accessTokens[0];
 
 if (accessTokens.length > 4) {
-    console.warn("Meer dan 4 reddit accounts per IP addres wordt niet geadviseerd!")
+    console.warn("Plus de 4 comptes reddit par adresse IP n'est pas recommandé !")
 }
 
 var socket;
@@ -106,7 +108,7 @@ function connectSocket() {
 
     socket.onopen = function () {
 
-        console.log('Connecter au serveur Louis de Funès !')
+        console.log('R/PlaceFRANCE !!! Connecté !');
 
         socket.send(JSON.stringify({ type: 'getmap' }));
     };
@@ -121,8 +123,8 @@ function connectSocket() {
 
         switch (data.type.toLowerCase()) {
             case 'map':
-                console.log(`Nieuwe map geladen (reden: ${data.reason ? data.reason : 'verbonden met server'})`)
-                currentOrders = await getMapFromUrl(`https://placenl.noahvdaa.me/maps/${data.data}`);
+                console.log(`Nouvelle map chargée (raison: ${data.reason ? data.reason : 'connecté au serveur'})`)
+                currentOrders = await getMapFromUrl(`https://${BASE_URL}/maps/${data.data}`);
                 currentOrderList = getRealWork(currentOrders.data);
                 break;
             default:
@@ -151,7 +153,7 @@ async function attemptPlace(accessToken) {
         map0 = await getMapFromUrl(await getCurrentImageUrl('0'))
         map1 = await getMapFromUrl(await getCurrentImageUrl('1'));
     } catch (e) {
-        console.warn('Erreur lors de la récupération du dossier: ', e);
+        console.warn('Erreur lors de la récupération de la map: ', e);
         setTimeout(retry, 15000); // probeer opnieuw in 15sec.
         return;
     }
@@ -161,7 +163,7 @@ async function attemptPlace(accessToken) {
     const work = getPendingWork(currentOrderList, rgbaOrder, rgbaCanvas);
 
     if (work.length === 0) {
-        console.log(`Alle pixels staan al op de goede plaats! Opnieuw proberen in 30 sec...`);
+        console.log(`Tous les pixels sont déjà à la bonne place ! Essayez à nouveau dans 30 secondes...`);
         setTimeout(retry, 30000); // probeer opnieuw in 30sec.
         return;
     }
@@ -173,7 +175,7 @@ async function attemptPlace(accessToken) {
     const y = Math.floor(i / 2000);
     const hex = rgbaOrderToHex(i, rgbaOrder);
 
-    console.log(`Proberen pixel te plaatsen op ${x}, ${y}... (${percentComplete}% compleet)`);
+    console.log(`Essaye de placer un pixel sur ${x}, ${y}... (${percentComplete}% complété)`);
 
     const res = await place(x, y, COLOR_MAPPINGS[hex], accessToken);
     const data = await res.json();
@@ -183,24 +185,24 @@ async function attemptPlace(accessToken) {
             const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
             const nextPixelDate = new Date(nextPixel);
             const delay = nextPixelDate.getTime() - Date.now();
-            console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+            console.log(`Pixel placé trop vite ! Le pixel suivant est placé à ${nextPixelDate.toLocaleTimeString()}.`)
             setTimeout(retry, delay);
         } else {
             const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
             const nextPixelDate = new Date(nextPixel);
             const delay = nextPixelDate.getTime() - Date.now();
-            console.log(`Pixel geplaatst op ${x}, ${y}! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+            console.log(`Pixel placé sur ${x}, ${y}! Le pixel suivant sera placé à ${nextPixelDate.toLocaleTimeString()}.`)
             setTimeout(retry, delay);
         }
     } catch (e) {
-        console.warn('Fout bij response analyseren', e);
+        console.warn('Erreur d\'analyse de la réponse', e);
         setTimeout(retry, 10000);
     }
 }
 
 function place(x, y, color, accessToken = defaultAccessToken) {
     socket.send(JSON.stringify({ type: 'placepixel', x, y, color }));
-    console.log("Placing pixel at (" + x + ", " + y + ") with color: " + color)
+    console.log("Placement du pixel à (" + x + ", " + y + ") avec la couleur: " + color)
 	return fetch('https://gql-realtime-2.reddit.com/query', {
 		method: 'POST',
 		body: JSON.stringify({
@@ -272,7 +274,7 @@ async function getCurrentImageUrl(id = '0') {
 			const parsed = JSON.parse(data);
 
             if (parsed.type === 'connection_error') {
-                console.error(`[!!] Kon /r/place map niet laden: ${parsed.payload.message}. Is de access token niet meer geldig?`);
+                console.error(`[!!] Impossible de charger la map /r/place: ${parsed.payload.message}. Le jeton d'accès n'est plus valide ?`);
             }
 
 			// TODO: ew
@@ -293,11 +295,11 @@ function getMapFromUrl(url) {
     return new Promise((resolve, reject) => {
         getPixels(url, function(err, pixels) {
             if(err) {
-                console.log("Bad image path")
+                console.log("Mauvais chemin vers l'image")
                 reject()
                 return
             }
-            console.log("got pixels", pixels.shape.slice())
+            console.log("Pixels récupérés", pixels.shape.slice())
             resolve(pixels)
         })
     });
