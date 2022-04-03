@@ -1,6 +1,9 @@
 import fetch from 'node-fetch';
 import getPixels from "get-pixels";
 import WebSocket from 'ws';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const BASE_URL = "placefrance.noan.dev";
 const VERSION_NUMBER = 1;
@@ -282,9 +285,7 @@ async function getCurrentImageUrl(id = '0') {
             }
 
 			// TODO: ew
-			if (!parsed.payload || !parsed.payload.data || !parsed.payload.data.subscribe || !parsed.payload.data.subscribe.data) {
-                console.log(payload);
-            };
+			if (!parsed.payload || !parsed.payload.data || !parsed.payload.data.subscribe || !parsed.payload.data.subscribe.data) return;
 
 			ws.close();
 			resolve(parsed.payload.data.subscribe.data.name + `?noCache=${Date.now() * Math.random()}`);
