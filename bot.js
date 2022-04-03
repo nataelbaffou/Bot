@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const BASE_URL = "placefrance.noan.dev";
-const VERSION_NUMBER = 1;
+const VERSION_NUMBER = 2;
 
 console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
@@ -176,13 +176,14 @@ async function attemptPlace(accessToken) {
     }
 
     const percentComplete = 100 - Math.ceil(work.length * 100 / currentOrderList.length);
+    const workRemaining = work.length;
     const idx = Math.floor(Math.random() * work.length);
     const i = work[idx];
     const x = i % 2000;
     const y = Math.floor(i / 2000);
     const hex = rgbaOrderToHex(i, rgbaOrder);
 
-    console.log(`Essaye de placer un pixel sur ${x}, ${y}... (${percentComplete}% complété)`);
+    console.log(`Essaye de placer un pixel sur ${x}, ${y}... (${percentComplete}% complété, même ${workRemaining} terminé)`);
 
     const res = await place(x, y, COLOR_MAPPINGS[hex], accessToken);
     const data = await res.json();
