@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceNL Bot Fork for France
 // @namespace    https://github.com/Skeeww/Bot
-// @version      25
+// @version      26
 // @description  FRANCE
 // @author       NoahvdAa (fork by Skew)
 // @match        https://www.reddit.com/r/place/*
@@ -55,7 +55,7 @@ const COLOR_MAPPINGS = {
 
 let getRealWork = rgbaOrder => {
     let order = [];
-    for (var i = 0; i < 2000000; i++) {
+    for (var i = 0; i < 4000000; i++) {
         if (rgbaOrder[(i * 4) + 3] !== 0) {
             order.push(i);
         }
@@ -76,11 +76,11 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
 (async function () {
     GM_addStyle(GM_getResourceText('TOASTIFY_CSS'));
     currentOrderCanvas.width = 2000;
-    currentOrderCanvas.height = 1000;
+    currentOrderCanvas.height = 2000;
     currentOrderCanvas.style.display = 'none';
     currentOrderCanvas = document.body.appendChild(currentOrderCanvas);
     currentPlaceCanvas.width = 2000;
-    currentPlaceCanvas.height = 1000;
+    currentPlaceCanvas.height = 2000;
     currentPlaceCanvas.style.display = 'none';
     currentPlaceCanvas = document.body.appendChild(currentPlaceCanvas);
 
@@ -141,7 +141,7 @@ function connectSocket() {
                     duration: 10000
                 }).showToast();
                 currentOrderCtx = await getCanvasFromUrl(`https://${BASE_URL}/maps/${data.data}`, currentOrderCanvas, 0, 0, true);
-                order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 1000).data);
+                order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 2000).data);
                 Toastify({
                     text: `Nouvelle map chargé, ${order.length} pixels au total`,
                     duration: 10000
@@ -171,7 +171,7 @@ async function attemptPlace() {
     var ctx;
     try {
         ctx = await getCanvasFromUrl(await getCurrentImageUrl('0'), currentPlaceCanvas, 0, 0, false);
-        ctx = await getCanvasFromUrl(await getCurrentImageUrl('1'), currentPlaceCanvas, 1000, 0, false)
+        ctx = await getCanvasFromUrl(await getCurrentImageUrl('1'), currentPlaceCanvas, 2000, 0, false)
     } catch (e) {
         console.warn('Erreur de récupération de la map: ', e);
         Toastify({
@@ -182,8 +182,8 @@ async function attemptPlace() {
         return;
     }
 
-    const rgbaOrder = currentOrderCtx.getImageData(0, 0, 2000, 1000).data;
-    const rgbaCanvas = ctx.getImageData(0, 0, 2000, 1000).data;
+    const rgbaOrder = currentOrderCtx.getImageData(0, 0, 2000, 2000).data;
+    const rgbaCanvas = ctx.getImageData(0, 0, 2000, 2000).data;
     const work = getPendingWork(order, rgbaOrder, rgbaCanvas);
 
     if (work.length === 0) {
@@ -252,8 +252,8 @@ function place(x, y, color) {
                     'actionName': 'r/replace:set_pixel',
                     'PixelMessageData': {
                         'coordinate': {
-                            'x': x % 1000,
-                            'y': y % 1000
+                            'x': x % 2000,
+                            'y': y % 2000
                         },
                         'colorIndex': color,
                         'canvasIndex': (x > 999 ? 1 : 0)
