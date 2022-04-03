@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceNL Bot Fork for France
 // @namespace    https://github.com/Skeeww/Bot
-// @version      14
+// @version      15
 // @description  FRANCE
 // @author       NoahvdAa (fork by Skew)
 // @match        https://www.reddit.com/r/place/*
@@ -90,7 +90,7 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     }).showToast();
     accessToken = await getAccessToken();
     Toastify({
-        text: 'Accesstoken opgehaald!',
+        text: 'Token d\'accès récupéré !',
         duration: 10000
     }).showToast();
 
@@ -100,6 +100,13 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     setInterval(() => {
         if (socket) socket.send(JSON.stringify({ type: 'ping' }));
     }, 5000);
+    setInterval(async () => {
+        accessToken = await getAccessToken();
+        Toastify({
+            text: 'Refraîchissement du jeton',
+            duration: 10000
+        }).showToast();
+    }, 30 * 60 * 1000)
 })();
 
 function connectSocket() {
@@ -116,7 +123,7 @@ function connectSocket() {
             duration: 10000
         }).showToast();
         socket.send(JSON.stringify({ type: 'getmap' }));
-        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV14' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV15' }));
     };
 
     socket.onmessage = async function (message) {
