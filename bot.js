@@ -62,6 +62,7 @@ const COLOR_MAPPINGS = {
 function connectSocket() {
     console.log("R/PlaceFRANCE !!! Connection...");
 
+
     socket = new WebSocket('wss://noan.dev/france/ws');
 
     socket.onerror = function(e) {
@@ -69,7 +70,9 @@ function connectSocket() {
     }
 
     socket.onopen = function () {
+
         console.log('Connecter au serveur Louis de Funès !')
+
         socket.send(JSON.stringify({ type: 'getmap' }));
     };
 
@@ -83,7 +86,7 @@ function connectSocket() {
 
         switch (data.type.toLowerCase()) {
             case 'map':
-                console.log(`Nieuwe map geladen (reden: ${data.reason ? data.reason : 'verbonden met server'})`)
+                console.log(`Nouvelle carte chargée (motif: ${data.reason ? data.reason : 'connecté au serveur'})`)
                 currentOrders = await getMapFromUrl(`https://placenl.noahvdaa.me/maps/${data.data}`);
                 hasOrders = true;
                 break;
@@ -93,8 +96,8 @@ function connectSocket() {
     };
 
     socket.onclose = function (e) {
-        console.warn(`PlaceNL server heeft de verbinding verbroken: ${e.reason}`)
-        console.error('Socketfout: ', e.reason);
+        console.warn(`Le serveur PlaceFR s'est déconnecté :${e.reason}`)
+        console.error('Erreur socket: ', e.reason);
         socket.close();
         setTimeout(connectSocket, 1000);
     };
@@ -112,7 +115,7 @@ async function attemptPlace() {
         map0 = await getMapFromUrl(await getCurrentImageUrl('0'))
         map1 = await getMapFromUrl(await getCurrentImageUrl('1'));
     } catch (e) {
-        console.warn('Fout bij ophalen map: ', e);
+        console.warn('Erreur lors de la récupération du dossier :', e);
         setTimeout(attemptPlace, 15000); // probeer opnieuw in 15sec.
         return;
     }
@@ -130,7 +133,7 @@ async function attemptPlace() {
 
         const x = i % 2000;
         const y = Math.floor(i / 2000);
-        console.log(`Pixel proberen te plaatsen op ${x}, ${y}...`)
+        console.log(`Tentative de pixel sur : ${x}, ${y}...`)
 
         const res = await place(x, y, COLOR_MAPPINGS[hex]);
         const data = await res.json();
@@ -140,24 +143,24 @@ async function attemptPlace() {
                 const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
                 const nextPixelDate = new Date(nextPixel);
                 const delay = nextPixelDate.getTime() - Date.now();
-                console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+                console.log(`Pixel posté trop tôt ! Le pixel suivant sera placé à ${nextPixelDate.toLocaleTimeString()}.`)
                 setTimeout(attemptPlace, delay);
             } else {
                 const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
                 const nextPixelDate = new Date(nextPixel);
                 const delay = nextPixelDate.getTime() - Date.now();
-                console.log(`Pixel geplaatst op ${x}, ${y}! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+                console.log(`Pixel placé le ${x}, ${y}! Le pixel suivant sera placé à ${nextPixelDate.toLocaleTimeString()}.`)
                 setTimeout(attemptPlace, delay);
             }
         } catch (e) {
-            console.warn('Fout bij response analyseren', e);
+            console.warn('Erreur détaillée :', e);
             setTimeout(attemptPlace, 10000);
         }
 
         return;
     }
 
-    console.log(`Alle pixels staan al op de goede plaats! Opnieuw proberen in 30 sec...`)
+    console.log(`Tous les pixels sont déjà au bon endroit ! Réessayez dans 30 secondes...`)
     setTimeout(attemptPlace, 30000); // probeer opnieuw in 30sec.
 }
 
