@@ -6,7 +6,7 @@ import ndarray from "ndarray";
 const args = process.argv.slice(2);
 
 if (args.length != 1 && !process.env.ACCESS_TOKEN) {
-    console.error("Missing access token.")
+    console.error("Token d'accès manquant")
     process.exit(1);
 }
 
@@ -60,16 +60,16 @@ const COLOR_MAPPINGS = {
 })();
 
 function connectSocket() {
-    console.log('Verbinden met PlaceNL server...')
+    console.log("R/PlaceFRANCE !!! Connection...");
 
-    socket = new WebSocket('wss://placenl.noahvdaa.me/api/ws');
+    socket = new WebSocket('wss://noan.dev/france/ws');
 
     socket.onerror = function(e) {
-        console.error("Socket error: " + e.message)
+        console.error("Erreur socket: " + e.message)
     }
 
     socket.onopen = function () {
-        console.log('Verbonden met PlaceNL server!')
+        console.log('Connecter au serveur Louis de Funès !')
         socket.send(JSON.stringify({ type: 'getmap' }));
     };
 
