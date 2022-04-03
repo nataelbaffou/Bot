@@ -10,6 +10,7 @@ if (args.length != 1 && !process.env.ACCESS_TOKEN) {
     process.exit(1);
 }
 
+const BASE_URL = "placefrance.noan.dev";
 let accessToken = process.env.ACCESS_TOKEN || args[0];
 
 var socket;
@@ -63,7 +64,7 @@ function connectSocket() {
     console.log("R/PlaceFRANCE !!! Connection...");
 
 
-    socket = new WebSocket('wss://noan.dev/france/ws');
+    socket = new WebSocket(`wss://${BASE_URL}/api/ws`);
 
     socket.onerror = function(e) {
         console.error("Erreur socket: " + e.message)
@@ -87,7 +88,7 @@ function connectSocket() {
         switch (data.type.toLowerCase()) {
             case 'map':
                 console.log(`Nouvelle carte chargée (motif: ${data.reason ? data.reason : 'connecté au serveur'})`)
-                currentOrders = await getMapFromUrl(`https://placenl.noahvdaa.me/maps/${data.data}`);
+                currentOrders = await getMapFromUrl(`https://${BASE_URL}/maps/${data.data}`);
                 hasOrders = true;
                 break;
             default:
