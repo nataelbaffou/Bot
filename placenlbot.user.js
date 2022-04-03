@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceNL Bot Fork for France
 // @namespace    https://github.com/Skeeww/Bot
-// @version      15
+// @version      17
 // @description  FRANCE
 // @author       NoahvdAa (fork by Skew)
 // @match        https://www.reddit.com/r/place/*
@@ -123,7 +123,7 @@ function connectSocket() {
             duration: 10000
         }).showToast();
         socket.send(JSON.stringify({ type: 'getmap' }));
-        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV15' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV17' }));
     };
 
     socket.onmessage = async function (message) {
@@ -140,7 +140,7 @@ function connectSocket() {
                     text: `Charge une nouvelle map (raison: ${data.reason ? data.reason : 'connecté au serveur'})...`,
                     duration: 10000
                 }).showToast();
-                currentOrderCtx = await getCanvasFromUrl(`https://${BASE_URL}/maps/${data.data}`, currentOrderCanvas);
+                currentOrderCtx = await getCanvasFromUrl(`https://${BASE_URL}/maps/${data.data}`, currentOrderCanvas, 0, 0, true);
                 order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 1000).data);
                 Toastify({
                     text: `Nouvelle map chargé, ${order.length} pixels au total`,
@@ -170,8 +170,8 @@ async function attemptPlace() {
     }
     var ctx;
     try {
-        ctx = await getCanvasFromUrl(await getCurrentImageUrl('0'), currentPlaceCanvas, 0, 0);
-        ctx = await getCanvasFromUrl(await getCurrentImageUrl('1'), currentPlaceCanvas, 1000, 0)
+        ctx = await getCanvasFromUrl(await getCurrentImageUrl('0'), currentPlaceCanvas, 0, 0, false);
+        ctx = await getCanvasFromUrl(await getCurrentImageUrl('1'), currentPlaceCanvas, 1000, 0, false)
     } catch (e) {
         console.warn('Erreur de récupération de la map: ', e);
         Toastify({
@@ -196,6 +196,7 @@ async function attemptPlace() {
     }
 
     const percentComplete = 100 - Math.ceil(work.length * 100 / order.length);
+    const workRemaining = work.length;
     const idx = Math.floor(Math.random() * work.length);
     const i = work[idx];
     const x = i % 2000;
@@ -203,7 +204,7 @@ async function attemptPlace() {
     const hex = rgbaOrderToHex(i, rgbaOrder);
 
     Toastify({
-        text: `Place un pixel aux coordonnées ${x}, ${y}... (${percentComplete}% complet)`,
+        text: `Place un pixel aux coordonnées ${x}, ${y}... (${percentComplete}% complet, même ${workRemaining} terminé)`,
         duration: 10000
     }).showToast();
 
@@ -327,12 +328,15 @@ async function getCurrentImageUrl(id = '0') {
     });
 }
 
-function getCanvasFromUrl(url, canvas, x = 0, y = 0) {
+function getCanvasFromUrl(url, canvas, x = 0, y = 0, clearCanvas = false) {
     return new Promise((resolve, reject) => {
         let loadImage = ctx => {
             var img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
+                if (clearCanvas) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
                 ctx.drawImage(img, x, y);
                 resolve(ctx);
             };
