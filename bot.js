@@ -3,6 +3,9 @@ import getPixels from "get-pixels";
 import WebSocket from 'ws';
 
 const BASE_URL = "placefrance.noan.dev";
+const VERSION_NUMBER = 1;
+
+console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
 const args = process.argv.slice(2);
 
@@ -111,6 +114,7 @@ function connectSocket() {
         console.log('R/PlaceFRANCE !!! Connecté !');
 
         socket.send(JSON.stringify({ type: 'getmap' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: `nodeheadlessV${VERSION_NUMBER}` }));
     };
 
     socket.onmessage = async function (message) {

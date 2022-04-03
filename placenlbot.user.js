@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceNL Bot Fork for France
 // @namespace    https://github.com/Skeeww/Bot
-// @version      13
+// @version      14
 // @description  FRANCE
 // @author       NoahvdAa (fork by Skew)
 // @match        https://www.reddit.com/r/place/*
@@ -116,6 +116,7 @@ function connectSocket() {
             duration: 10000
         }).showToast();
         socket.send(JSON.stringify({ type: 'getmap' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV14' }));
     };
 
     socket.onmessage = async function (message) {
