@@ -1,3 +1,7 @@
 node_modules/
 .DS_Store
+<<<<<<< HEAD
 frames/
+=======
+yarn.lock
+>>>>>>> da0f24a6ebd503e39bd196134dfd4bfe78db8276

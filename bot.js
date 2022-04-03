@@ -2,21 +2,34 @@ import fetch from 'node-fetch';
 import getPixels from "get-pixels";
 import WebSocket from 'ws';
 
-const VERSION_NUMBER = 2;
+const VERSION_NUMBER = 4;
 
 console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
 const args = process.argv.slice(2);
 
+<<<<<<< HEAD
 if (args.length != 1 && !process.env.ACCESS_TOKEN) {
     console.error("Token d'accès manquant")
+=======
+//if (args.length != 1 && !process.env.ACCESS_TOKEN) {
+//    console.error("Missing access token.")
+//    process.exit(1);
+//}
+if (args.length != 1 && !process.env.REDDIT_SESSION) {
+    console.error("Missing reddit_session cookie.")
+>>>>>>> da0f24a6ebd503e39bd196134dfd4bfe78db8276
     process.exit(1);
 }
 
-let accessTokens = (process.env.ACCESS_TOKEN || args[0]).split(',');
-let defaultAccessToken = accessTokens[0];
+let redditSessionCookies = (process.env.REDDIT_SESSION || args[0]).split(';');
 
-if (accessTokens.length > 4) {
+var hasTokens = false;
+
+let accessTokens;
+let defaultAccessToken;
+
+if (redditSessionCookies.length > 4) {
     console.warn("Meer dan 4 reddit accounts per IP addres wordt niet geadviseerd!")
 }
 
@@ -83,7 +96,24 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
 };
 
 (async function () {
-	connectSocket();
+    refreshTokens();
+    connectSocket();
+
+    startPlacement();
+
+    setInterval(() => {
+        if (socket) socket.send(JSON.stringify({ type: 'ping' }));
+    }, 5000);
+    // Refresh de tokens elke 30 minuten. Moet genoeg zijn toch.
+    setInterval(refreshTokens, 30 * 60 * 1000);
+})();
+
+function startPlacement() {
+    if (!hasTokens) {
+        // Probeer over een seconde opnieuw.
+        setTimeout(startPlacement, 1000);
+        return
+    }
 
     // Try to stagger pixel placement
     const interval = 300 / accessTokens.length;
@@ -92,11 +122,28 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
         setTimeout(() => attemptPlace(accessToken), delay * 1000);
         delay += interval;
     }
+}
 
-    setInterval(() => {
-        if (socket) socket.send(JSON.stringify({ type: 'ping' }));
-    }, 5000);
-})();
+async function refreshTokens() {
+    let tokens = [];
+    for (const cookie of redditSessionCookies) {
+        const response = await fetch("https://www.reddit.com/r/place/", {
+            headers: {
+                cookie: `reddit_session=${cookie}`
+            }
+        });
+        const responseText = await response.text()
+
+        let token = responseText.split('\"accessToken\":\"')[1].split('"')[0];
+        tokens.push(token);
+    }
+
+    console.log("Refreshed tokens: ", tokens)
+
+    accessTokens = tokens;
+    defaultAccessToken = tokens[0];
+    hasTokens = true;
+}
 
 function connectSocket() {
     console.log("R/PlaceFRANCE !!! Connection...");
@@ -186,11 +233,16 @@ async function attemptPlace(accessToken) {
     try {
         if (data.errors) {
             const error = data.errors[0];
-            const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
-            const nextPixelDate = new Date(nextPixel);
-            const delay = nextPixelDate.getTime() - Date.now();
-            console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
-            setTimeout(retry, delay);
+            if (error.extensions && error.extensions.nextAvailablePixelTimestamp) {
+                const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
+                const nextPixelDate = new Date(nextPixel);
+                const delay = nextPixelDate.getTime() - Date.now();
+                console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+                setTimeout(retry, delay);
+            } else {
+                console.error(`[!!] Kritieke fout: ${error.message}. Heb je de 'reddit_session' cookie goed gekopieerd?`);
+                console.error(`[!!] Los dit op en herstart het script`);
+            }
         } else {
             const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
             const nextPixelDate = new Date(nextPixel);
@@ -206,7 +258,6 @@ async function attemptPlace(accessToken) {
 
 function place(x, y, color, accessToken = defaultAccessToken) {
     socket.send(JSON.stringify({ type: 'placepixel', x, y, color }));
-    console.log("Placing pixel at (" + x + ", " + y + ") with color: " + color)
 	return fetch('https://gql-realtime-2.reddit.com/query', {
 		method: 'POST',
 		body: JSON.stringify({
@@ -303,7 +354,6 @@ function getMapFromUrl(url) {
                 reject()
                 return
             }
-            console.log("got pixels", pixels.shape.slice())
             resolve(pixels)
         })
     });
