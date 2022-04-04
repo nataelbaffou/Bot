@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceNL Bot Fork for France
 // @namespace    https://github.com/Skeeww/Bot
-// @version      35
+// @version      37
 // @description  FRANCE
 // @author       NoahvdAa (fork by r/placefrance)
 // @match        https://www.reddit.com/r/place/*
