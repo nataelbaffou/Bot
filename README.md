@@ -1,6 +1,6 @@
 # Bot (Français)
 
-Bot pour PlaceFrance! Ce bot ce connect au [serveur de commandement](https://github.com/Skeeww/Commando) et reçoit les ordres de ce dernier. Vous pouvez voir l'historique des ordres [ici](https://placefrance.noan.dev/).
+Bot pour l'INSA! Ce bot ce connect au [serveur de commandement](https://github.com/nataelbaffou/Commando) et reçoit les ordres de ce dernier. Vous pouvez voir l'historique des ordres [ici](http:/146.148.123.244:3987/).
 
 ## Extension pour le navigateur
 
@@ -9,7 +9,7 @@ Bot pour PlaceFrance! Ce bot ce connect au [serveur de commandement](https://git
 Avant l'installation, assurez-vous que votre compteur de temps sur r/place soit bien à 0
 
 1. Installer l'extension [Tampermonkey](https://www.tampermonkey.net/).
-2. Cliquer sur ce lien: [https://raw.githubusercontent.com/Skeeww/Bot/master/placenlbot.user.js](https://raw.githubusercontent.com/Skeeww/Bot/master/placenlbot.user.js). Si tout vas bien Tampermonkey devrait vous demander si vous souhaitez installer cette extension. Cliquer sur **Install**.
+2. Cliquer sur ce lien: [https://raw.githubusercontent.com/nataelbaffou/Bot/master/placenlbot.user.js](https://raw.githubusercontent.com/nataelbaffou/Bot/master/placenlbot.user.js). Si tout vas bien Tampermonkey devrait vous demander si vous souhaitez installer cette extension. Cliquer sur **Install**.
 3. Recharger votre onglet **r/place**. Si tout ce passe bien, vous devriez voir des messages apparaître en haut à droite de votre navigateur. Le bot est désormais actif, vous pouvez observer ces actions au travers des messages.
 
 ### Problèmes
@@ -20,7 +20,7 @@ Avant l'installation, assurez-vous que votre compteur de temps sur r/place soit 
 
 # Bot (English)
 
-The PlaceFrance bot and their allies! This bot connects with the [command server](https://github.com/Skeeww/Commando) and gets it's orders from there. You can see the orderhistory [here](https://placefrance.noan.dev/).
+The INSA bot and their allies! This bot connects with the [command server](https://github.com/nataelbaffou/Commando) and gets it's orders from there. You can see the orderhistory [here](http:/146.148.123.244:3987/).
 
 ## User script bot
 
@@ -29,7 +29,7 @@ The PlaceFrance bot and their allies! This bot connects with the [command server
 before you start, make sure your cooldown has run out!
 
 1. Install the [Tampermonkey](https://www.tampermonkey.net/) browserextention.
-2. Click on this link: [https://github.com/Skeeww/Bot/raw/master/placenlbot.user.js](https://raw.githubusercontent.com/Skeeww/Bot/master/placenlbot.user.js). If everything went well you'll see Tampermonkey ask you to add it. Click **Install**.
+2. Click on this link: [https://github.com/nataelbaffou/Bot/raw/master/placenlbot.user.js](https://raw.githubusercontent.com/nataelbaffou/Bot/master/placenlbot.user.js). If everything went well you'll see Tampermonkey ask you to add it. Click **Install**.
 3. Reload your **r/place** tab. If everything went well, you'll see "Accesstoken ophalen..." in the top right of your screen. The bot is now active, You'll be able to see what the bot is doing through these messages.
 
 ### Cons of this bot

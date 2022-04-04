@@ -90,7 +90,7 @@ let USER_AGENTS = [
 
 let CHOSEN_AGENT = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
 
-let rgbaJoinH = (a1, a2, rowSize = 1000, cellSize = 4) => {
+let rgbaJoinH = (a1, a2, rowSize = 2000, cellSize = 4) => {
     const rawRowSize = rowSize * cellSize;
     const rows = a1.length / rawRowSize;
     let result = new Uint8Array(a1.length + a2.length);
@@ -199,7 +199,7 @@ async function refreshTokens() {
 }
 
 function connectSocket() {
-    console.log("R/PlaceFRANCE !!! Connection...");
+    console.log("R/INSA !!! Connection...");
 
 
     socket = new WebSocket(`wss://${BASE_URL}/api/ws`);
@@ -210,7 +210,7 @@ function connectSocket() {
 
     socket.onopen = function () {
 
-        console.log('R/PlaceFRANCE !!! Connecté !');
+        console.log('R/INSA !!! Connecté !');
 
         socket.send(JSON.stringify({ type: 'getmap' }));
         socket.send(JSON.stringify({ type: 'brand', brand: `nodeheadless-${PREFIX}-V${VERSION_NUMBER}` }));
@@ -236,7 +236,7 @@ function connectSocket() {
     };
 
     socket.onclose = function (e) {
-        console.warn(`Le serveur PlaceFR s'est déconnecté :${e.reason}`)
+        console.warn(`Le serveur INSA s'est déconnecté :${e.reason}`)
         console.error('Erreur socket: ', e.reason);
         socket.close();
         setTimeout(connectSocket, 1000);

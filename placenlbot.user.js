@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         PlaceNL Bot Fork for France
-// @namespace    https://github.com/Skeeww/Bot
+// @name         PlaceNL Bot Fork for INSA
+// @namespace    https://github.com/nataelbaffou/Bot
 // @version      38
-// @description  FRANCE
-// @author       NoahvdAa (fork by r/placefrance)
+// @description  INSA
+// @author       NoahvdAa (fork by r/placefrance) (fork by nataelbaffou)
 // @match        https://www.reddit.com/r/place/*
 // @match        https://new.reddit.com/r/place/*
 // @connect      reddit.com
@@ -11,8 +11,8 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
 // @require	     https://cdn.jsdelivr.net/npm/toastify-js
 // @resource     TOASTIFY_CSS https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css
-// @updateURL    https://raw.githubusercontent.com/Skeeww/Bot/master/placenlbot.user.js
-// @downloadURL  https://raw.githubusercontent.com/Skeeww/Bot/master/placenlbot.user.js
+// @updateURL    https://raw.githubusercontent.com/nataelbaffou/Bot/master/placenlbot.user.js
+// @downloadURL  https://raw.githubusercontent.com/nataelbaffou/Bot/master/placenlbot.user.js
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest

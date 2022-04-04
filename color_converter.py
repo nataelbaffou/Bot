@@ -1,5 +1,6 @@
 from PIL import Image
 import math
+from functools import lru_cache
 
 RGB_CODE_DICTIONARY = {
     (255, 69, 0): 2,  # bright red
@@ -20,24 +21,29 @@ RGB_CODE_DICTIONARY = {
     (255, 255, 255): 31,  # white
 }
 
-def find_palette(point):
-    def distance(c1, c2):
-        (r1, g1, b1) = c1
-        (r2, g2, b2, a2) = c2
-        return math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
+colors = list(RGB_CODE_DICTIONARY.keys())
 
-    colors = list(RGB_CODE_DICTIONARY.keys())
+
+@lru_cache(maxsize=None)
+def distance(c1, c2):
+    (r1, g1, b1) = c1
+    (r2, g2, b2, a2) = c2
+    return math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
+
+
+def find_palette(point):
     closest_colors = sorted(colors, key=lambda color: distance(color, point))
     closest_color = closest_colors[0]
-    code = RGB_CODE_DICTIONARY[closest_color]
-    return code
+    return closest_color
 
-img = Image.open("./Sans titre-22.png")
+
+img = Image.open("./raw_insa_logo.png")
 
 for x in range(img.width):
     for y in range(img.height):
         pixel = img.getpixel((x, y))
-        color = find_palette(pixel)
-        img.putpixel((x, y), color)
+        if pixel[3] != 0:
+            color = find_palette(pixel)
+            img.putpixel((x, y), color)
 
-img.save("./cathedrale.png", "PNG")
+img.save("./insa_logo.png", "PNG")
