@@ -271,20 +271,19 @@ async function attemptPlace(accessTokenHolder) {
     const res = await place(x, y, COLOR_MAPPINGS[hex], accessTokenHolder.token);
     const data = await res.json();
     try {
-        const error = data.errors[0];
         if (data.error || data.errors) {
             const error = data.error || data.errors[0];
             if (error.extensions && error.extensions.nextAvailablePixelTs) {
                 const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
                 const nextPixelDate = new Date(nextPixel);
                 const delay = nextPixelDate.getTime() - Date.now();
-                console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+                console.log(`Pixel placed too fast! Next pixel is placed at ${nextPixelDate.toLocaleTimeString()}.`)
                 setTimeout(retry, delay);
             } else {
                 const message = error.message || error.reason || 'Unknown error';
-                const guidance = message === 'user is not logged in' ? 'Heb je de "reddit_session" cookie goed gekopieerd?' : '';
-                console.error(`[!!] Kritieke fout: ${message}. ${guidance}`);
-                console.error(`[!!] Los dit op en herstart het script`);
+                const guidance = message === 'user is not logged in' ? 'Did you copy the "reddit_session" correctly ?' : '';
+                console.error(`[!!] Critical Error: ${message}. ${guidance}`);
+                console.error(`[!!] Script need to be restarted`);
             }
         } else {
             const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
