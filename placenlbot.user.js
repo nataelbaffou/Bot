@@ -64,6 +64,8 @@ const COLOR_MAPPINGS = {
     '#FFFFFF': 31
 };
 
+let downloadTimeoutId;
+
 let getRealWork = rgbaOrder => {
     let order = [];
     for (var i = 0; i < 4000000; i++) {
@@ -143,16 +145,27 @@ function connectSocket() {
 
         switch (data.type.toLowerCase()) {
             case 'map':
+                const dlTime = Math.random() * 30 * 1000;
+                if (downloadTimeoutId !== undefined) {
+                    clearTimeout(downloadTimeoutId);
+                    downloadTimeoutId = undefined;
+                }
                 Toastify({
-                    text: `Chargement nouveau pixel art (raison : ${data.reason ? data.reason : 'non communiquée'})...`,
+                    text: `Téléchargement de la map dans ${Math.floor(dlTime / 1000)} secondes...`,
                     duration: DEFAULT_TOAST_DURATION_MS
                 }).showToast();
-                currentOrderCtx = await getCanvasFromUrl(`https://${BASE_URL}/maps/${data.data}`, currentOrderCanvas, 0, 0, true);
-                order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 2000).data);
-                Toastify({
-                    text: `Pixel art chargé (${order.length} pixels à placer)`,
-                    duration: DEFAULT_TOAST_DURATION_MS
-                }).showToast();
+                downloadTimeoutId = setTimeout(async () => {
+                    Toastify({
+                        text: `Chargement nouveau pixel art (raison : ${data.reason ? data.reason : 'non communiquée'})...`,
+                        duration: DEFAULT_TOAST_DURATION_MS
+                    }).showToast();
+                    currentOrderCtx = await getCanvasFromUrl(`https://${BASE_URL}/maps/${data.data}`, currentOrderCanvas, 0, 0, true);
+                    order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 2000).data);
+                    Toastify({
+                        text: `Pixel art chargé (${order.length} pixels à placer)`,
+                        duration: DEFAULT_TOAST_DURATION_MS
+                    }).showToast();
+                }, dlTime);
                 break;
             case 'toast':
                 Toastify({
