@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const BASE_URL = "placefrance.noan.dev";
-const VERSION_NUMBER = 6;
+const VERSION_NUMBER = 8;
 
 console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
@@ -17,7 +17,7 @@ const args = process.argv.slice(2);
 //    process.exit(1);
 //}
 if (args.length != 1 && !process.env.REDDIT_SESSION) {
-    console.error("Missing reddit_session cookie.")
+    console.error("Cookie reddit_session manquant.")
     process.exit(1);
 }
 
@@ -70,6 +70,24 @@ const COLOR_MAPPINGS = {
     '#D4D7D9': 30,
     '#FFFFFF': 31
 };
+
+let USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/100.0.1185.29",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Safari/605.1.15",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 12.3; rv:98.0) Gecko/20100101 Firefox/98.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0",
+    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.141 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/99.0.1150.36"
+];
+
+let CHOSEN_AGENT = USER_AGENTS[Math.floor(Math.random()*USER_AGENTS.length)];
 
 let rgbaJoinH = (a1, a2, rowSize = 1000, cellSize = 4) => {
     const rawRowSize = rowSize * cellSize;
@@ -138,7 +156,7 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
 function startPlacement() {
     if (!hasTokens) {
         // Probeer over een seconde opnieuw.
-        setTimeout(startPlacement, 1000);
+        setTimeout(startPlacement, 10000);
         return
     }
 
@@ -227,7 +245,7 @@ function connectSocket() {
 async function attemptPlace(accessTokenHolder) {
     let retry = () => attemptPlace(accessTokenHolder);
     if (currentOrderList === undefined) {
-        setTimeout(retry, 2000); // probeer opnieuw in 2sec.
+        setTimeout(retry, 10000); // probeer opnieuw in 10sec.
         return;
     }
     
@@ -325,7 +343,8 @@ function place(x, y, color, accessToken = defaultAccessToken) {
 			'referer': 'https://hot-potato.reddit.com/',
 			'apollographql-client-name': 'mona-lisa',
 			'Authorization': `Bearer ${accessToken}`,
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+            'User-Agent': CHOSEN_AGENT
 		}
 	});
 }
@@ -334,7 +353,7 @@ async function getCurrentImageUrl(id = '0') {
 	return new Promise((resolve, reject) => {
 		const ws = new WebSocket('wss://gql-realtime-2.reddit.com/query', 'graphql-ws', {
         headers : {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0",
+            "User-Agent": CHOSEN_AGENT,
             "Origin": "https://hot-potato.reddit.com"
         }
       });
