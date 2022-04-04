@@ -130,7 +130,7 @@ function connectSocket() {
             duration: DEFAULT_TOAST_DURATION_MS
         }).showToast();
         socket.send(JSON.stringify({ type: 'getmap' }));
-        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV23' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV32' }));
     };
 
     socket.onmessage = async function (message) {
