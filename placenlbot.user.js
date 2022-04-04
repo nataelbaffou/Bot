@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceNL Bot Fork for France
 // @namespace    https://github.com/Skeeww/Bot
-// @version      37
+// @version      38
 // @description  FRANCE
 // @author       NoahvdAa (fork by r/placefrance)
 // @match        https://www.reddit.com/r/place/*
@@ -111,7 +111,7 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     attemptPlace();
 
     setInterval(() => {
-        if (socket) socket.send(JSON.stringify({ type: 'ping' }));
+        if (socket && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'ping' }));
     }, 5000);
     setInterval(async () => {
         accessToken = await getAccessToken();
@@ -132,7 +132,7 @@ function connectSocket() {
             duration: DEFAULT_TOAST_DURATION_MS
         }).showToast();
         socket.send(JSON.stringify({ type: 'getmap' }));
-        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV32' }));
+        socket.send(JSON.stringify({ type: 'brand', brand: 'userscriptV38' }));
     };
 
     socket.onmessage = async function (message) {
@@ -252,7 +252,7 @@ async function attemptPlace() {
             }).showToast();
             setTimeout(attemptPlace, delay);
         } else {
-            const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
+            const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000 + Math.floor(Math.random() * 10000); // Add random time between 0 and 10 sec to avoid detection and spread after server restart.
             const nextPixelDate = new Date(nextPixel);
             const delay = nextPixelDate.getTime() - Date.now();
             const toast_duration = delay > 0 ? delay : DEFAULT_TOAST_DURATION_MS;
