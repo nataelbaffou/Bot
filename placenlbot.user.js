@@ -26,7 +26,7 @@ var currentOrderCtx = currentOrderCanvas.getContext('2d');
 var currentPlaceCanvas = document.createElement('canvas');
 
 // Global constants
-const BASE_URL = "[2a01:e34:ec12:8890:84c9:d72c:9460:b041]";
+const BASE_URL = "[2a01:e34:ec12:8890:5e2:71a4:7098:85a4]";
 const DEFAULT_TOAST_DURATION_MS = 10000;
 
 const COLOR_MAPPINGS = {

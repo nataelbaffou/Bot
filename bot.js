@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const BASE_URL = "[2a01:e34:ec12:8890:84c9:d72c:9460:b041]";
+const BASE_URL = "[2a01:e34:ec12:8890:5e2:71a4:7098:85a4]";
 const PREFIX = process.env.PREFIX || "simple"
 const VERSION_NUMBER = 11;
 
