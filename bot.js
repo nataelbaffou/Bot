@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const BASE_URL = "placefrance.noan.dev";
-const VERSION_NUMBER = 6;
+const VERSION_NUMBER = 7;
 
 console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
@@ -131,14 +131,14 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     setInterval(() => {
         if (socket) socket.send(JSON.stringify({ type: 'ping' }));
     }, 5000);
-    // Refresh de tokens elke 30 minuten. Moet genoeg zijn toch.
+    // Refresh the tokens every 30 minutes. Should be enough anyway.
     setInterval(refreshTokens, 30 * 60 * 1000);
 })();
 
 function startPlacement() {
     if (!hasTokens) {
-        // Probeer over een seconde opnieuw.
-        setTimeout(startPlacement, 1000);
+        // Try again in a 10 seconds.
+        setTimeout(startPlacement, 10000);
         return
     }
 
@@ -227,7 +227,7 @@ function connectSocket() {
 async function attemptPlace(accessTokenHolder) {
     let retry = () => attemptPlace(accessTokenHolder);
     if (currentOrderList === undefined) {
-        setTimeout(retry, 2000); // probeer opnieuw in 2sec.
+        setTimeout(retry, 10000); // try again in 10sec
         return;
     }
     
@@ -242,7 +242,7 @@ async function attemptPlace(accessTokenHolder) {
         map3 = await getMapFromUrl(await getCurrentImageUrl('3'));
     } catch (e) {
         console.warn('Erreur lors de la récupération de la map: ', e);
-        setTimeout(retry, 15000); // probeer opnieuw in 15sec.
+        setTimeout(retry, 15000); // try again in 15sec
         return;
     }
 
@@ -254,7 +254,7 @@ async function attemptPlace(accessTokenHolder) {
 
     if (work.length === 0) {
         console.log(`Tous les pixels sont déjà à la bonne place ! Essayez à nouveau dans 30 secondes...`);
-        setTimeout(retry, 30000); // probeer opnieuw in 30sec.
+        setTimeout(retry, 30000); // try again in 30sec
         return;
     }
 
